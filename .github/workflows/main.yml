@@ -23,6 +23,7 @@ jobs:
           mf.write_text(re.sub(r'\s*package="[^"]+"', '', mf.read_text(encoding="utf-8")), encoding="utf-8")
           for kt in (root / "app/src/main/java").rglob("*.kt"):
               txt = kt.read_text(encoding="utf-8")
+              txt = txt.replace("= DEFAULT_VTUBER_GLOSSARY", "= VTransConfig.DEFAULT_VTUBER_GLOSSARY")
               txt = txt.replace('✅ 悬浮窗权限：已开启\n"', '✅ 悬浮窗权限：已开启\\n"')
               txt = txt.replace('❌ 悬浮窗权限：未开启（请点击下方按钮开启）\n"', '❌ 悬浮窗权限：未开启（请点击下方按钮开启）\\n"')
               txt = txt.replace("https://api.groq.com/openai/v1", "https://api.siliconflow.cn/v1")
