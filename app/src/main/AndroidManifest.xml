@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.vtuber.vtransoverlay">
+
+    <!-- 网络请求权限：用于调用大模型与语音同传 API -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 录音权限：Android AudioPlaybackCapture 内录与麦克风采集均需此权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- 悬浮窗权限：用于在 YouTube / Twitch 等直播应用上方绘制实时字幕 -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- 前台服务权限：保证退到后台看直播时同传服务不被系统杀后台 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:label="VTrans 同传悬浮窗"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".FloatingTranslatorService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection|microphone" />
+
+    </application>
+</manifest>
