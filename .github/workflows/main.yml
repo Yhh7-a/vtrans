@@ -14,9 +14,28 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.5'
+      - name: Auto-Fix Manifest and Kotlin Strings
+        run: |
+          python3 - << 'PYEOF'
+          import pathlib, re
+          root = next(pathlib.Path(".").rglob("settings.gradle.kts")).parent
+          mf = root / "app/src/main/AndroidManifest.xml"
+          mf.write_text(re.sub(r'\s*package="[^"]+"', '', mf.read_text(encoding="utf-8")), encoding="utf-8")
+          for kt in (root / "app/src/main/java").rglob("*.kt"):
+              txt = kt.read_text(encoding="utf-8")
+              txt = txt.replace('✅ 悬浮窗权限：已开启\n"', '✅ 悬浮窗权限：已开启\\n"')
+              txt = txt.replace('❌ 悬浮窗权限：未开启（请点击下方按钮开启）\n"', '❌ 悬浮窗权限：未开启（请点击下方按钮开启）\\n"')
+              txt = txt.replace("https://api.groq.com/openai/v1", "https://api.siliconflow.cn/v1")
+              txt = txt.replace("whisper-large-v3-turbo", "FunAudioLLM/SenseVoiceSmall")
+              txt = txt.replace("https://api.deepseek.com/v1", "https://api.siliconflow.cn/v1")
+              txt = txt.replace('"deepseek-chat"', '"deepseek-ai/DeepSeek-V3"')
+              kt.write_text(txt, encoding="utf-8")
+          PYEOF
       - name: Build Debug APK
-        run: gradle assembleDebug --no-daemon
+        run: |
+          PROJECT_ROOT=$(dirname $(find . -name "settings.gradle.kts" | head -n 1))
+          cd "$PROJECT_ROOT" && gradle assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
         with:
           name: VTransOverlay-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: "**/app/build/outputs/apk/debug/app-debug.apk"
